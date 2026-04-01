@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warfarin Dose Adjustment & Scheduler</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="p-4 md:p-8">
+    <div class="mx-auto max-w-6xl main-container">
+        <!-- Header -->
+        <header class="mb-8 flex justify-between items-center no-print">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-800">
+                    <i class="fa-solid fa-calculator-medical text-blue-600 mr-2"></i>
+                    โปรแกรมคำนวณปรับขนาดยา Warfarin
+                </h1>
+                <p class="text-slate-500 mt-1 font-bold">กลุ่มงานเภสัชกรรม โรงพยาบาลโพนทอง</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="copy-note"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-copy"></i> คัดลอกขนาดยา
+                </button>
+                <button id="print-slip"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-print"></i> พิมพ์วิธีกินยา
+                </button>
+            </div>
+        </header>
+
+        <!-- Clinical Guideline Table (Algorithm Guide) -->
+        <div class="max-w-6xl mx-auto mb-8 no-print">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 bg-slate-800 text-white flex items-center justify-between">
+                    <h2 class="font-bold text-sm uppercase tracking-widest flex items-center">
+                        <i class="fa-solid fa-book-medical mr-2 text-blue-400"></i> Recommend Dosage Adjustment for
+                        Warfarin Maintenance Therapy
+                    </h2>
+                    <span class="text-[10px] opacity-60">อ้างอิง: Warfarin Maintenance Therapy Guidelines</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-[11px] text-center border-collapse">
+                        <thead>
+                            <tr class="bg-blue-50 text-blue-900 border-b border-blue-100">
+                                <th class="p-2 border-r border-blue-100 font-black">INR < 1.5</th>
+                                <th class="p-2 border-r border-blue-100 font-black">INR 1.5-1.9</th>
+                                <th class="p-2 border-r border-blue-100 font-black bg-blue-600 text-white">Target
+                                    INR<br>2.0-3.0</th>
+                                <th class="p-2 border-r border-blue-100 font-black">INR 3.1-3.9</th>
+                                <th class="p-2 border-r border-blue-100 font-black">INR 4.0-4.9</th>
+                                <th class="p-2 border-r border-blue-100 font-black text-red-600">INR 5.0-8.9<br>(No
+                                    bleeding)</th>
+                                <th class="p-2 border-r border-blue-100 font-black text-red-700">INR ≥ 9.0<br>(No
+                                    bleeding)</th>
+                                <th class="p-2 font-black bg-red-600 text-white">Major Bleeding<br>with any INR</th>
+                            </tr>
+                            <tr class="bg-indigo-50 text-indigo-900 border-b border-indigo-100">
+                                <th class="p-2 border-r border-indigo-100 font-black">INR < 1.9</th>
+                                <th class="p-2 border-r border-indigo-100 font-black">INR 1.9-2.4</th>
+                                <th class="p-2 border-r border-indigo-100 font-black bg-indigo-600 text-white">Target
+                                    INR<br>2.5-3.5</th>
+                                <th class="p-2 border-r border-indigo-100 font-black">INR 3.6-4.5</th>
+                                <th class="p-2 border-r border-indigo-100 font-black">INR 4.6-4.9</th>
+                                <th class="p-2 border-r border-indigo-100 font-black text-red-600">INR 5.0-8.9<br>(No
+                                    bleeding)</th>
+                                <th class="p-2 border-r border-indigo-100 font-black text-red-700">INR ≥ 9.0<br>(No
+                                    bleeding)</th>
+                                <th class="p-2 font-black bg-red-600 text-white">Major Bleeding<br>with any INR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-slate-700">
+                                <td class="p-3 border-r bg-white font-bold">Increase<br>weekly dose<br>10-20%</td>
+                                <td class="p-3 border-r bg-white font-bold text-blue-600">Increase<br>weekly
+                                    dose<br>5-10%</td>
+                                <td class="p-3 border-r bg-slate-50 font-black text-slate-400">No<br>Change</td>
+                                <td class="p-3 border-r bg-white font-bold text-purple-600">Decrease<br>weekly
+                                    dose<br>5-10%</td>
+                                <td class="p-3 border-r bg-white font-bold">Hold 1 dose<br>+ ลดขนาด 10%</td>
+                                <td class="p-3 border-r bg-red-50 text-red-600 font-bold">Hold 1-2 dose<br>+ Vit K1 1 mg
+                                    po</td>
+                                <td class="p-3 border-r bg-red-100 text-red-700 font-bold">Vit K1<br>5-10 mg po</td>
+                                <td class="p-3 bg-red-600 text-white font-black text-[9px]">Vit K1 10 mg IV<br>+
+                                    FFP<br>Rep. Vit K q 12h</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module A: Patient Input & Dose Adjustment -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 no-print mb-6">
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center">
+                    <i class="fa-solid fa-user-pen mr-2 text-blue-500"></i> ข้อมูลผู้ป่วย
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">ขนาดยาสัปดาห์ปัจจุบัน
+                            (mg/wk)</label>
+                        <input type="number" id="current-weekly-dose" step="0.5" value="21"
+                            class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-bold text-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">ค่า INR ล่าสุด</label>
+                        <input type="number" id="current-inr" step="0.1" value="1.5"
+                            class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition font-black text-xl text-blue-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">เป้าหมาย INR (Target)</label>
+                        <select id="target-inr"
+                            class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            <option value="2.5">AF/DVT/PE (เป้าหมาย 2.0-3.0)</option>
+                            <option value="3.0">Mechanical Heart Valve (2.5-3.5)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2 pt-2">
+                        <input type="checkbox" id="major-bleeding"
+                            class="w-5 h-5 accent-red-600 rounded cursor-pointer">
+                        <label for="major-bleeding"
+                            class="text-sm font-black text-red-600 cursor-pointer uppercase tracking-tight">เลือดออกรุนแรง
+                            (Major Bleeding)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center">
+                    <i class="fa-solid fa-sliders mr-2 text-blue-500"></i> การปรับขนาดยา (Dose Adjustment)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Suggested Adjustment -->
+                    <div id="suggestion-box"
+                        class="p-4 rounded-xl border-l-4 border-blue-500 bg-blue-50 flex items-center">
+                        <div>
+                            <p class="text-sm font-bold text-blue-800 uppercase tracking-wide">คำแนะนำเบื้องต้น</p>
+                            <p id="suggestion-text" class="text-xl font-extrabold text-blue-900 mt-1">กำลังคำนวณ...</p>
+                            <p id="suggestion-hint" class="text-sm text-blue-700 mt-1">กรุณากรอกข้อมูลผู้ป่วย</p>
+                        </div>
+                    </div>
+                    <!-- Manual Adjustment -->
+                    <div class="flex flex-col justify-center">
+                        <div class="flex flex-col mb-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-bold text-slate-600">สัดส่วนการปรับ (%)</span>
+                                <div class="flex items-center gap-2">
+                                    <button id="dec-percent"
+                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-red-100 hover:bg-red-200 text-red-600 font-black text-lg transition shadow-sm">−</button>
+                                    <span id="adjustment-percent"
+                                        class="font-black text-2xl text-blue-600 min-w-[70px] text-center">0%</span>
+                                    <button id="inc-percent"
+                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 text-green-600 font-black text-lg transition shadow-sm">+</button>
+                                </div>
+                            </div>
+                            <input type="range" id="adjustment-slider" min="-50" max="50" step="2.5" value="0"
+                                class="w-full h-3 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            <div
+                                class="flex justify-between text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                                <span>ลด 50%</span>
+                                <span>ไม่ปรับ</span>
+                                <span>เพิ่ม 50%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-end justify-between border-t border-slate-100 pt-3">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase">ขนาดยาสัปดาห์ใหม่ (mg/wk)</p>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="new-weekly-dose-input" step="0.5"
+                                        class="text-3xl font-black text-blue-700 bg-blue-50 border-b-4 border-blue-400 focus:outline-none w-28 px-2 py-1 rounded-t-lg">
+                                    <span class="text-base font-bold text-blue-400 italic">mg/wk</span>
+                                </div>
+                            </div>
+                            <div id="warning-box"
+                                class="hidden text-amber-600 text-xs font-semibold flex items-center bg-amber-50 px-2 py-1 rounded-lg border border-amber-200">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> ปรับมากเกินไป (>20%)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Clinical Notes (Enlarged) -->
+                <div
+                    class="mt-6 p-4 bg-slate-50 rounded-xl border-l-4 border-slate-300 text-sm text-slate-700 leading-relaxed italic shadow-sm">
+                    <p class="mb-2 flex items-start gap-2"><span class="text-blue-500 font-bold">•</span> หากค่า INR
+                        มากหรือน้อยกว่าเป้าหมายเล็กน้อย (±0.2) อาจพิจารณาคงขนาดยาเดิม</p>
+                    <p class="flex items-start gap-2"><span class="text-blue-500 font-bold">•</span>
+                        หากผู้ป่วยเพิ่งมีค่า INR มากหรือน้อยกว่าเป้าหมายเป็นครั้งแรกๆ (±0.5 target INR)
+                        อาจพิจารณาคงขนาดยาเดิม และนัดซ้ำ 1-2 สัปดาห์</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Safety Alerts -->
+        <div id="critical-alert"
+            class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-4 fade-in no-print">
+            <div
+                class="w-10 h-10 flex-shrink-0 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-lg">
+                <i class="fa-solid fa-skull-crossbones"></i>
+            </div>
+            <div>
+                <h3 class="text-red-800 font-bold text-lg">⚠️ INR > 4.5 — ระดับอันตราย</h3>
+                <p class="text-red-700 text-sm">พิจารณา Hold ยา และปรับลดขนาดยา ตรวจสอบอาการเลือดออก หรือส่งพบแพทย์ทันที
+                </p>
+            </div>
+        </div>
+
+        <!-- Pill Calculator -->
+        <div class="max-w-4xl mx-auto mb-6 no-print">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-slate-700 text-sm flex items-center uppercase tracking-wider">
+                        <i class="fa-solid fa-tablets mr-2 text-blue-500"></i> จำนวนเม็ดยาจนถึงวันนัด
+                    </h3>
+                    <div class="flex gap-1.5">
+                        <button
+                            class="appt-day-btn px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-blue-50 transition"
+                            data-days="7">7 วัน</button>
+                        <button
+                            class="appt-day-btn px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-blue-50 transition"
+                            data-days="14">14 วัน</button>
+                        <button
+                            class="appt-day-btn px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-blue-50 transition ring-2 ring-blue-500 bg-blue-100"
+                            data-days="30">30 วัน</button>
+                        <button
+                            class="appt-day-btn px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-blue-50 transition"
+                            data-days="60">60 วัน</button>
+                        <button
+                            class="appt-day-btn px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-blue-50 transition"
+                            data-days="90">90 วัน</button>
+                    </div>
+                </div>
+                <div id="pill-count-container">
+                    <!-- JS Dynamic -->
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto mb-6 no-print">
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-blue-500 overflow-hidden">
+                <div class="px-5 py-3 bg-blue-600 text-white flex justify-between items-center">
+                    <div>
+                        <h3 class="font-black text-lg uppercase tracking-tight flex items-center">
+                            <i class="fa-solid fa-calendar-check mr-2"></i> ตารางแนะนำวิธีกินยาใหม่
+                        </h3>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-black"><span id="schedule-twd-badge">21.0</span> <small
+                                class="text-xs">mg/wk</small></div>
+                    </div>
+                </div>
+                <div class="p-3 md:p-4 bg-slate-50">
+                    <div id="new-schedule-table" class="grid grid-cols-1 gap-2">
+                        <!-- JS Dynamic Content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print View Content -->
+        <div class="print-only">
+            <div class="print-header">ตารางการรับประทานยา Warfarin</div>
+            <div class="print-subheader">กลุ่มงานเภสัชกรรม โรงพยาบาลโพนทอง</div>
+            <div class="print-dose-info"
+                style="display:flex; justify-content:center; gap:20px; font-size:12px; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                <span><b>เดิม:</b> <span id="print-current-dose">-</span> mg/wk</span>
+                <span><b>ใหม่:</b> <span id="print-new-dose">-</span> mg/wk</span>
+                <span><b>ปรับ:</b> <span id="print-adj-percent">-</span>%</span>
+            </div>
+            <div id="print-schedule">
+                <!-- JS Dynamic Content -->
+            </div>
+            <div id="print-instructions">
+                <!-- JS Dynamic Content -->
+            </div>
+            <div class="print-footer-note">
+                <p>อย่าหยุดยาเองโดยไม่ปรึกษาแพทย์หรือเภสัชกร หากมีอาการเลือดออกผิดปกติให้รีบพบแพทย์</p>
+            </div>
+        </div>
+
+        <!-- Footer Disclaimer -->
+        <footer class="mt-8 py-4 border-t border-slate-200 no-print flex flex-col items-center">
+            <p class="text-slate-600 font-bold mb-1">พัฒนาโดย ภก.ปิติพงษ์ ปิตกพงศ์ดำรง</p>
+            <p class="text-slate-400 text-sm italic">
+                เครื่องมือนี้เป็นเพียงส่วนเสริมในการคำนวณ
+                การตัดสินใจสั่งจ่ายยาขึ้นอยู่กับวิจารณญาณทางคลินิกของแพทย์และเภสัชกร
+            </p>
+        </footer>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script src="js/app.js?v=2"></script>
+</body>
+
+</html>
