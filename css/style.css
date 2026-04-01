@@ -1,0 +1,130 @@
+/* Core */
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8fafc;
+}
+
+/* Pill Rendering (Realistic) */
+.pill-render {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2), 2px 2px 4px rgba(0,0,0,0.1);
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.pill-render::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background: rgba(0,0,0,0.1);
+    box-shadow: 1px 0 0 rgba(255,255,255,0.2);
+}
+
+.pill-pink   { background: radial-gradient(circle at 30% 30%, #ffcbd1, #ff8fa3); border: 1px solid #ff758f; }
+.pill-blue   { background: radial-gradient(circle at 30% 30%, #bae6fd, #38bdf8); border: 1px solid #0ea5e9; }
+.pill-orange { background: radial-gradient(circle at 30% 30%, #fed7aa, #fb923c); border: 1px solid #f97316; }
+
+.half-pill {
+    width: 16px;
+    border-radius: 32px 0 0 32px;
+    overflow: hidden;
+}
+.half-pill::after { display: none; }
+
+/* Interactive Controls */
+input[type=range] {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    appearance: none;
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #3b82f6;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(59,130,246,0.5);
+    border: 2px solid white;
+}
+
+/* Print Layout (A4 Optimized, COLOR) */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 8mm 10mm;
+    }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    body {
+        background: white;
+        padding: 0;
+        margin: 0;
+        font-size: 12pt;
+        line-height: 1.4;
+        color: #000;
+    }
+    .card { border: none !important; box-shadow: none !important; }
+    .main-container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    #print-schedule { page-break-inside: avoid; }
+    .print-header { font-size: 22pt; font-weight: 900; text-align: center; margin-bottom: 5mm; }
+    .print-subheader { font-size: 14pt; text-align: center; color: #444; margin-bottom: 5mm; }
+    .print-footer-note { font-size: 10pt; text-align: center; margin-top: 5mm; font-style: italic; color: #666; border-top: 1px solid #ccc; padding-top: 3mm; }
+    .print-row {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 22px 15px;
+        border-bottom: 2px solid #bbb;
+        font-size: 16pt;
+    }
+    .print-day { font-weight: 900; min-width: 120px; font-size: 20pt; }
+    .print-instr { flex: 1; font-weight: 700; line-height: 2.0; }
+    .print-time { font-weight: 700; color: #b45309; font-size: 10pt; white-space: nowrap; }
+    #print-instructions {
+        margin-top: 20px;
+        padding: 15px;
+        border: 2px solid #eee;
+        border-radius: 12px;
+        font-size: 14pt;
+        line-height: 1.8;
+    }
+}
+.print-only { display: none; }
+
+/* Screen-only print row styling (mirrored for dev) */
+.print-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 4px;
+    border-bottom: 1px solid #e2e8f0;
+}
+.print-day { font-weight: 900; min-width: 70px; }
+.print-instr { flex: 1; font-weight: 600; }
+.print-time { font-weight: 700; color: #b45309; white-space: nowrap; }
+
+/* Animations */
+.fade-in { animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scrollbar tweaks */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
